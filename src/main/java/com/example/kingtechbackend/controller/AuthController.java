@@ -10,19 +10,25 @@ import com.google.api.client.json.gson.GsonFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200") // TODO: Ajouter l'URL de Vercel plus tard
 public class AuthController {
 
     @Autowired
     private UtilisateurRepository utilisateurRepository;
+
+    // L'outil magique pour chiffrer les mots de passe
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
     public ResponseEntity<?> inscrireUtilisateur(@RequestBody Utilisateur nouvelUtilisateur) {
@@ -31,9 +37,13 @@ public class AuthController {
                     .body("Erreur : Cet email est déjà utilisé !");
         }
 
-        // TODO plus tard : Hasher le mot de passe avec BCryptPasswordEncoder
+        // 1. CHIFFFREMENT : On crypte le mot de passe avant de le sauvegarder
+        String motDePasseCrypte = passwordEncoder.encode(nouvelUtilisateur.getMotDePasse());
+        nouvelUtilisateur.setMotDePasse(motDePasseCrypte);
+
         Utilisateur utilisateurSauvegarde = utilisateurRepository.save(nouvelUtilisateur);
 
+        // Par sécurité, on ne renvoie jamais le mot de passe (même crypté) au front-end
         utilisateurSauvegarde.setMotDePasse(null);
         return ResponseEntity.ok(utilisateurSauvegarde);
     }
@@ -49,11 +59,13 @@ public class AuthController {
 
         Utilisateur utilisateur = utilisateurOpt.get();
 
-        if (!utilisateur.getMotDePasse().equals(loginRequest.getMotDePasse())) {
+        // 2. VÉRIFICATION : BCrypt compare le mot de passe tapé (en clair) avec celui en base (crypté)
+        if (!passwordEncoder.matches(loginRequest.getMotDePasse(), utilisateur.getMotDePasse())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Erreur : Mot de passe incorrect.");
         }
 
+        // Succès ! On nettoie le mot de passe avant l'envoi
         utilisateur.setMotDePasse(null);
         return ResponseEntity.ok(utilisateur);
     }
@@ -85,7 +97,11 @@ public class AuthController {
                     utilisateur.setEmail(email);
                     utilisateur.setNom(nomFamily != null ? nomFamily : "Utilisateur");
                     utilisateur.setPrenom(prenomGiven != null ? prenomGiven : "Google");
-                    utilisateur.setMotDePasse("GOOGLE_AUTH");
+
+                    // 3. SECURITÉ GOOGLE : On génère un mot de passe aléatoire crypté impossible à deviner
+                    String randomPassword = UUID.randomUUID().toString();
+                    utilisateur.setMotDePasse(passwordEncoder.encode(randomPassword));
+
                     utilisateur.setRole("MEMBRE");
                     utilisateur = utilisateurRepository.save(utilisateur);
                 }
