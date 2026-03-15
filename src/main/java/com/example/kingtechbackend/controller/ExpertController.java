@@ -62,4 +62,10 @@ public class ExpertController {
         );
         return ResponseEntity.ok(messageSauvegarde);
     }
+
+    // NOUVEAU : Récupérer la liste des clients d'un expert
+    @GetMapping("/{expertId}/clients")
+    public ResponseEntity<List<Utilisateur>> getClients(@PathVariable Long expertId) {
+        return ResponseEntity.ok(messageExpertRepository.findClientsParExpert(expertId));
+    }
 }
