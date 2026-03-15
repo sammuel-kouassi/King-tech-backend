@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200") // TODO: Ajouter l'URL de Vercel plus tard
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     @Autowired
