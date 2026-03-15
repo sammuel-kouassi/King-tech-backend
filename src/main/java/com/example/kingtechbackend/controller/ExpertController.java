@@ -4,6 +4,7 @@ import com.example.kingtechbackend.model.MessageExpert;
 import com.example.kingtechbackend.model.Utilisateur;
 import com.example.kingtechbackend.repository.MessageExpertRepository;
 import com.example.kingtechbackend.repository.UtilisateurRepository;
+import com.example.kingtechbackend.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,9 @@ public class ExpertController {
 
     @Autowired
     private MessageExpertRepository messageExpertRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     // 1. Récupérer tous les experts pour la barre latérale
     @GetMapping
@@ -50,6 +54,12 @@ public class ExpertController {
         messageInfo.setDestinataire(destinataire);
 
         MessageExpert messageSauvegarde = messageExpertRepository.save(messageInfo);
+
+        emailService.envoyerNotificationExpert(
+                destinataire.getEmail(),
+                expediteur.getPrenom() + " " + expediteur.getNom(),
+                messageInfo.getContenu()
+        );
         return ResponseEntity.ok(messageSauvegarde);
     }
 }

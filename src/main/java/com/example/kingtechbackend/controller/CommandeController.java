@@ -1,9 +1,9 @@
 package com.example.kingtechbackend.controller;
 
-
 import com.example.kingtechbackend.dto.CommandeRequestDTO;
 import com.example.kingtechbackend.model.Commande;
 import com.example.kingtechbackend.service.CommandeService;
+import com.example.kingtechbackend.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +18,27 @@ public class CommandeController {
     @Autowired
     private CommandeService commandeService;
 
+    @Autowired
+    private EmailService emailService;
+
     @PostMapping
     public ResponseEntity<Commande> validerCommande(@RequestBody CommandeRequestDTO request) {
         try {
+            // 1. On crée et sauvegarde la commande
             Commande nouvelleCommande = commandeService.creerCommande(request);
+
+            // 2. On utilise bien "nouvelleCommande" pour récupérer les infos et envoyer l'email !
+            emailService.envoyerRecuAchat(
+                    nouvelleCommande.getEmailClient(),
+                    nouvelleCommande.getNomClient(),
+                    "CMD-" + nouvelleCommande.getId(), // Ex: CMD-104
+                    nouvelleCommande.getTotal()            );
+
+            // 3. On renvoie la réponse à Angular
             return ResponseEntity.ok(nouvelleCommande);
+
         } catch (RuntimeException e) {
+            System.err.println("Erreur lors de la validation de la commande : " + e.getMessage());
             return ResponseEntity.badRequest().body(null);
         }
     }
