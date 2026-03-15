@@ -27,7 +27,7 @@ public class MessageExpert {
     @JoinColumn(name = "expediteur_id", nullable = false)
     private Utilisateur expediteur;
 
-    // Celui qui reçoit le message (l'expert, ou le client si l'expert répond)
+    // Celui qui reçoit le message (l'expert, ou le client si l'expert répond).
     @ManyToOne
     @JoinColumn(name = "destinataire_id", nullable = false)
     private Utilisateur destinataire;

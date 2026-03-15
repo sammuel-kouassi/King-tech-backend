@@ -20,11 +20,10 @@ public class Discussion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String titre; // ex: "Robot suiveur de ligne..."
+    private String titre;
 
-    // Infos sur l'auteur (on garde ça simple pour le moment sans table Utilisateur complexe)
-    private String nomAuteur; // ex: "MakerSophie"
-    private String initialesAuteur; // ex: "MS"
+    private String nomAuteur;
+    private String initialesAuteur;
 
     private LocalDateTime dateCreation;
 
@@ -43,7 +42,7 @@ public class Discussion {
     private Categorie categorie;
 
 
-    // Ajoute ceci : Une discussion contient plusieurs messages
+    //Une discussion contient plusieurs messages
     @OneToMany(mappedBy = "discussion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages = new ArrayList<>();
 }

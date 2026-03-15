@@ -53,7 +53,7 @@ public class ForumService {
             discussion.setDateCreation(LocalDateTime.now());
         }
 
-        // On met à jour le compteur global de la catégorie (+1 sujet)
+        // On met à jour le compteur global de la catégorie (+1 sujet).
         categorie.setNombreSujets(categorie.getNombreSujets() + 1);
         categorieRepository.save(categorie);
 
@@ -71,10 +71,10 @@ public class ForumService {
             message.setDateCreation(LocalDateTime.now());
         }
 
-        // VRAI CALCUL : +1 Réponse dans la discussion concernée
+        // Nombre Réponse dans la discussion concernée
         discussion.setNombreReponses(discussion.getNombreReponses() + 1);
 
-        // VRAI CALCUL : +1 Message dans la catégorie globale
+        // Nombre Message dans la catégorie globale
         Categorie cat = discussion.getCategorie();
         cat.setNombreMessages(cat.getNombreMessages() + 1);
 
@@ -86,13 +86,13 @@ public class ForumService {
         return messageRepository.save(message);
     }
 
-    // NOUVEAU : Récupérer une discussion par son ID
+    // Récupérer une discussion par son ID
     public Discussion getDiscussionById(Long id) {
         return discussionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Discussion introuvable"));
     }
 
-    // NOUVEAU : Récupérer tous les messages d'une discussion
+    // Récupérer tous les messages d'une discussion
     public List<Message> getMessagesParDiscussion(Long discussionId) {
         return messageRepository.findByDiscussionIdOrderByDateCreationAsc(discussionId);
     }

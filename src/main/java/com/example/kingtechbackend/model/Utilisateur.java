@@ -28,9 +28,9 @@ public class Utilisateur {
     private String email;
 
     @Column(nullable = false)
-    private String motDePasse; // Note : En production, on crypte ça avec BCrypt !
+    private String motDePasse;
 
-    private String role = "MEMBRE"; // "MEMBRE", "EXPERT", ou "ADMIN"
+    private String role = "MEMBRE";
 
     private LocalDateTime dateInscription = LocalDateTime.now();
 

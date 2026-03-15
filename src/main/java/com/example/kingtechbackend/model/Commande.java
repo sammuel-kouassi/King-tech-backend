@@ -20,7 +20,7 @@ public class Commande {
     private Long id;
 
     @Column(unique = true)
-    private String numeroCommande; // ex: KT-2026-0001
+    private String numeroCommande;
 
     private LocalDateTime dateCommande;
     private Double total;

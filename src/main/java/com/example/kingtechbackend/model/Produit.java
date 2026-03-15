@@ -36,7 +36,7 @@ public class Produit {
     private Double note;
     private String badge;
 
-    // NOUVEAU : Champ pour identifier les produits vedettes
+    // Champ pour identifier les produits vedettes
     private Boolean isPopular;
 
     @ElementCollection

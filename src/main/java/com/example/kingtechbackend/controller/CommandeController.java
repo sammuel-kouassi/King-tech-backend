@@ -24,17 +24,17 @@ public class CommandeController {
     @PostMapping
     public ResponseEntity<Commande> validerCommande(@RequestBody CommandeRequestDTO request) {
         try {
-            // 1. On crée et sauvegarde la commande
+            // On crée et sauvegarde la commande
             Commande nouvelleCommande = commandeService.creerCommande(request);
 
-            // 2. On utilise bien "nouvelleCommande" pour récupérer les infos et envoyer l'email !
+            // On utilise bien "nouvelleCommande" pour récupérer les infos et envoyer l'email !
             emailService.envoyerRecuAchat(
                     nouvelleCommande.getEmailClient(),
                     nouvelleCommande.getNomClient(),
                     "CMD-" + nouvelleCommande.getId(), // Ex: CMD-104
                     nouvelleCommande.getTotal()            );
 
-            // 3. On renvoie la réponse à Angular
+            // On renvoie la réponse à Angular
             return ResponseEntity.ok(nouvelleCommande);
 
         } catch (RuntimeException e) {

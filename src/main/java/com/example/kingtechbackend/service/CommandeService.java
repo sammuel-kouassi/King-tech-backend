@@ -37,7 +37,7 @@ public class CommandeService {
         commande.setAdresseLivraison(request.adresseLivraison());
         commande.setTelephone(request.telephone());
 
-        // Génération du numéro de commande (Ex: KT-2026-0001)
+        // Génération du numéro de commande (Ex : KT-2026-0001)
         int anneeEnCours = Calendar.getInstance().get(Calendar.YEAR);
         long nombreCommandesExistantes = commandeRepository.count();
         String numCommande = String.format("KT-%d-%04d", anneeEnCours, nombreCommandesExistantes + 1);
@@ -53,7 +53,7 @@ public class CommandeService {
                 throw new RuntimeException("Stock insuffisant pour le produit : " + produit.getNom());
             }
 
-            // 2. Création de la ligne de commande
+            // Création de la ligne de commande
             LigneCommande ligne = new LigneCommande();
             ligne.setProduit(produit);
             ligne.setQuantite(ligneDTO.quantite());
@@ -62,14 +62,14 @@ public class CommandeService {
             double sousTotal = produit.getPrix() * ligneDTO.quantite();
             ligne.setSousTotal(sousTotal);
 
-            // 3. Lier la ligne à la commande
+            // Lier la ligne à la commande
             ligne.setCommande(commande);
             commande.getLignes().add(ligne);
 
-            // 4. Ajouter au total global
+            // Ajouter au total global
             totalCommande += sousTotal;
 
-            // 5. Mise à jour du stock du produit (On déduit ce qui a été acheté)
+            // Mise à jour du stock du produit (On déduit ce qui a été acheté)
             produit.setStock(produit.getStock() - ligneDTO.quantite());
             produitRepository.save(produit);
         }

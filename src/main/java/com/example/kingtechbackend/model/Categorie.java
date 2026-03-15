@@ -23,12 +23,12 @@ public class Categorie {
     private String nom;
     private String icone;
 
-    // Les compteurs affichés sur ton interface
+    // Les compteurs affichés sur l’interface
     private Integer nombreSujets = 0;
     private Integer nombreMessages = 0;
 
     // La relation avec les discussions
     @OneToMany(mappedBy = "categorie", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore // On n'oublie pas la règle d'or pour éviter la boucle infinie !
+    @JsonIgnore
     private List<Discussion> discussions = new ArrayList<>();
 }

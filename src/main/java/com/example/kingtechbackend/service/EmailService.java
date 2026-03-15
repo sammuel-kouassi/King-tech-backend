@@ -12,7 +12,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    // 1. Envoyer une notification à un expert
+    // Envoyer une notification à un expert
     @Async
     public void envoyerNotificationExpert(String emailExpert, String nomClient, String messageApercu) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -27,7 +27,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
-    // 2. Envoyer un reçu d'achat au client
+    // Envoyer un reçu d'achat au client
     @Async
     public void envoyerRecuAchat(String emailClient, String nomClient, String numeroCommande, double montantTotal) {
         SimpleMailMessage message = new SimpleMailMessage();

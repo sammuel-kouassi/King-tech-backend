@@ -26,8 +26,6 @@ public class ForumController {
     @Autowired
     private MessageRepository messageRepository;
 
-    // --- Routes GET (Pour afficher dans Angular) ---
-
     @GetMapping("/categories")
     public ResponseEntity<List<Categorie>> getCategories() {
         return ResponseEntity.ok(forumService.getAllCategories());
@@ -42,8 +40,6 @@ public class ForumController {
     public ResponseEntity<List<Discussion>> getDiscussionsDeCategorie(@PathVariable Long categorieId) {
         return ResponseEntity.ok(forumService.getDiscussionsParCategorie(categorieId));
     }
-
-    // --- Routes POST (Pour ajouter des données via Postman ou Angular) ---
 
     @PostMapping("/categories")
     public ResponseEntity<Categorie> ajouterCategorie(@RequestBody Categorie categorie) {
@@ -78,13 +74,13 @@ public class ForumController {
     public ResponseEntity<Map<String, Long>> getForumStats() {
         Map<String, Long> stats = new HashMap<>();
 
-        // 1. Total des membres (tous les utilisateurs)
+        // Total des membres (tous les utilisateurs)
         stats.put("membres", utilisateurRepository.count());
 
-        // 2. Total des messages du forum
+        // Total des messages du forum
         stats.put("messages", messageRepository.count());
 
-        // 3. Total des experts (pour "experts en ligne", c'est une bonne approximation pour commencer)
+        // Total des experts
         stats.put("experts", utilisateurRepository.countByRole("EXPERT"));
 
         return ResponseEntity.ok(stats);

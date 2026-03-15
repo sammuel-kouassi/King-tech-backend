@@ -1,6 +1,6 @@
 package com.example.kingtechbackend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore; // <-- IMPORT À AJOUTER
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
