@@ -12,10 +12,14 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
+    // L'adresse expéditeur validée sur ton compte Brevo
+    private final String expediteur = "sammuel.kouassi2026@gmail.com";
+
     // Envoyer une notification à un expert
     @Async
     public void envoyerNotificationExpert(String emailExpert, String nomClient, String messageApercu) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(expediteur);
         message.setTo(emailExpert);
         message.setSubject("NOUVEAU MESSAGE - KING-TECH Expert");
         message.setText("Bonjour,\n\n" +
@@ -31,6 +35,7 @@ public class EmailService {
     @Async
     public void envoyerRecuAchat(String emailClient, String nomClient, String numeroCommande, double montantTotal) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(expediteur); // <-- ET ICI AUSSI
         message.setTo(emailClient);
         message.setSubject("Reçu de votre commande KING-TECH #" + numeroCommande);
         message.setText("Bonjour " + nomClient + ",\n\n" +
