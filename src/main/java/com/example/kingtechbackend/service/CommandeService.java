@@ -1,6 +1,5 @@
 package com.example.kingtechbackend.service;
 
-
 import com.example.kingtechbackend.dto.CommandeRequestDTO;
 import com.example.kingtechbackend.dto.LigneCommandeRequestDTO;
 import com.example.kingtechbackend.model.Commande;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -37,11 +37,16 @@ public class CommandeService {
         commande.setAdresseLivraison(request.adresseLivraison());
         commande.setTelephone(request.telephone());
 
-        // Génération du numéro de commande (Ex : KT-2026-0001)
+        // Génération du numéro de commande (Ex : KT-2026-0001)
         int anneeEnCours = Calendar.getInstance().get(Calendar.YEAR);
         long nombreCommandesExistantes = commandeRepository.count();
         String numCommande = String.format("KT-%d-%04d", anneeEnCours, nombreCommandesExistantes + 1);
         commande.setNumeroCommande(numCommande);
+
+        // SÉCURITÉ 1 : On s'assure que la liste des lignes est initialisée pour éviter le NullPointerException
+        if (commande.getLignes() == null) {
+            commande.setLignes(new ArrayList<>());
+        }
 
         double totalCommande = 0.0;
 
@@ -49,7 +54,10 @@ public class CommandeService {
             Produit produit = produitRepository.findById(ligneDTO.produitId())
                     .orElseThrow(() -> new RuntimeException("Produit non trouvé : " + ligneDTO.produitId()));
 
-            if (produit.getStock() < ligneDTO.quantite()) {
+            // SÉCURITÉ 2 : On gère le cas où la case stock est vide (null) dans Supabase
+            int stockDisponible = (produit.getStock() != null) ? produit.getStock() : 0;
+
+            if (stockDisponible < ligneDTO.quantite()) {
                 throw new RuntimeException("Stock insuffisant pour le produit : " + produit.getNom());
             }
 
@@ -70,7 +78,7 @@ public class CommandeService {
             totalCommande += sousTotal;
 
             // Mise à jour du stock du produit (On déduit ce qui a été acheté)
-            produit.setStock(produit.getStock() - ligneDTO.quantite());
+            produit.setStock(stockDisponible - ligneDTO.quantite());
             produitRepository.save(produit);
         }
 
@@ -79,5 +87,8 @@ public class CommandeService {
         // Sauvegarde finale en base de données (CascadeType.ALL va aussi sauvegarder les lignes)
         return commandeRepository.save(commande);
     }
-    public List<Commande> getAllCommandes() { return commandeRepository.findAll(); }
+
+    public List<Commande> getAllCommandes() {
+        return commandeRepository.findAll();
+    }
 }
